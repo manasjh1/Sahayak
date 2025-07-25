@@ -97,6 +97,16 @@ const TeacherDashboard = () => {
       bgColor: "bg-orange-50",
       action: () => navigate("/chat")
     },
+    {
+  id: 6,
+  title: "Concept Visualizer",
+  description: "Enter a topic to get video-based explanations",
+  icon: BookOpen, // You can change to another icon like 'PlayCircle' or 'Video'
+  color: "text-pink-500",
+  bgColor: "bg-pink-50",
+  action: () => navigate("/concept-video")
+}
+
     // {
     //   id: 6,
     //   title: "Educational Game Generator",

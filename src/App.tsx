@@ -8,6 +8,8 @@ import RegistrationPage from "./pages/RegistrationPage";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ChatInterface from "./pages/ChatInterface";
 import NotFound from "./pages/NotFound";
+import ConceptVideo from "@/pages/ConceptVideo";
+
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,9 @@ const App = () => (
           <Route path="/" element={<RegistrationPage />} />
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/chat" element={<ChatInterface />} />
+          <Route path="/concept-video" element={<ConceptVideo />} />
+
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
