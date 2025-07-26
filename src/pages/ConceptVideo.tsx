@@ -12,7 +12,7 @@ const ConceptVideo = () => {
 
         const normalizedTopic = topic.toLowerCase().trim();
 
-        if (normalizedTopic === "conduction") {
+        if (normalizedTopic === "Metal vs non-metal") {
             setLoading(true);
             setShowVideo(false);
 
@@ -34,7 +34,7 @@ const ConceptVideo = () => {
                 <h2 className="text-2xl font-bold mb-4 text-center">🎬 Visualize a Concept</h2>
                 <Input
                     type="text"
-                    placeholder="e.g., Conduction"
+                    placeholder="e.g., Metal vs non-metal"
                     value={topic}
                     onChange={(e) => {
                         setTopic(e.target.value);
