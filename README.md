@@ -313,13 +313,6 @@ yarn dev
 # Navigate to http://localhost:5173
 ```
 
-#### ⚙️ **Environment Configuration**
-```env
-VITE_API_BASE_URL=https://rag-bot-53xj.onrender.com
-VITE_APP_NAME=Sahayak
-VITE_VERSION=1.0.0
-```
-
 #### 🏗️ **Build for Production**
 ```bash
 # Build optimized version
