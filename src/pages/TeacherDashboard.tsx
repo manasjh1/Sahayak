@@ -77,7 +77,7 @@ const TeacherDashboard = () => {
       icon: Upload,
       color: "text-green-500",
       bgColor: "bg-green-50",
-      action: () => navigate("/chat")
+      action: () => navigate("/worksheet")
     },
     {
       id: 3,
