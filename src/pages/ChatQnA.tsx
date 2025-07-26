@@ -14,6 +14,7 @@ interface ChatMessage {
 
 const ChatQnA = () => {
   const [inputMessage, setInputMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
@@ -26,7 +27,7 @@ const ChatQnA = () => {
   const { toast } = useToast();
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || loading) return;
 
     const userMessage: ChatMessage = {
       id: messages.length + 1,
@@ -37,29 +38,48 @@ const ChatQnA = () => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
+    setLoading(true);
 
     try {
       const res = await fetch("https://rag-bot-53xj.onrender.com/qa", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ question: inputMessage }),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
       const data = await res.json();
 
       const assistantMessage: ChatMessage = {
         id: messages.length + 2,
         type: "assistant",
-        content: data.response || "Sorry, I couldn’t find an answer.",
+        content: data.answer || "Sorry, I couldn't find an answer.", // Backend returns 'answer', not 'response'
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
+      console.error("Error:", err);
       toast({
         title: "Error",
         description: "Failed to get a response from the server.",
       });
+      
+      const errorMessage: ChatMessage = {
+        id: messages.length + 2,
+        type: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,6 +114,7 @@ const ChatQnA = () => {
               <button
                 key={index}
                 className="w-full text-left px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 transition-all"
+                onClick={() => setInputMessage(item)}
               >
                 {item}
               </button>
@@ -136,6 +157,20 @@ const ChatQnA = () => {
                       </div>
                     </div>
                   ))}
+                  {loading && (
+                    <div className="flex justify-start">
+                      <div className="bg-white text-foreground mr-4 shadow-sm rounded-lg p-3">
+                        <div className="flex items-center space-x-2">
+                          <Bot className="h-5 w-5 text-primary" />
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Input */}
@@ -152,9 +187,14 @@ const ChatQnA = () => {
                           handleSendMessage();
                         }
                       }}
+                      disabled={loading}
                     />
-                    <Button onClick={handleSendMessage} className="px-6">
-                      Send
+                    <Button 
+                      onClick={handleSendMessage} 
+                      className="px-6"
+                      disabled={loading || !inputMessage.trim()}
+                    >
+                      {loading ? "Sending..." : "Send"}
                     </Button>
                   </div>
                 </div>
