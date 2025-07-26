@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, User, Bot } from "lucide-react";
 
 interface WorksheetMessage {
@@ -12,6 +13,8 @@ interface WorksheetMessage {
 
 const WorksheetGenerator = () => {
   const [inputMessage, setInputMessage] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("Medium");
+  const [loading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<WorksheetMessage[]>([
     {
       id: 1,
@@ -22,24 +25,33 @@ const WorksheetGenerator = () => {
   ]);
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || loading) return;
 
     const userMessage: WorksheetMessage = {
       id: messages.length + 1,
       type: "user",
-      content: inputMessage,
+      content: `${inputMessage} (${difficulty})`,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
+    setLoading(true);
 
     try {
+      // Create FormData instead of JSON
+      const formData = new FormData();
+      formData.append('msg', inputMessage);
+      formData.append('difficulty', difficulty);
+
       const res = await fetch("https://rag-bot-53xj.onrender.com/worksheet", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ request: inputMessage }),
+        body: formData, // Send FormData instead of JSON
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
 
       const data = await res.json();
 
@@ -52,7 +64,16 @@ const WorksheetGenerator = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
-      alert("Error: Failed to generate worksheet from the server.");
+      console.error("Error:", err);
+      const errorMessage: WorksheetMessage = {
+        id: messages.length + 2,
+        type: "assistant",
+        content: "Sorry, I couldn't generate a worksheet. Please try again.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,6 +108,7 @@ const WorksheetGenerator = () => {
               <button
                 key={index}
                 className="w-full text-left px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 transition-all"
+                onClick={() => setInputMessage(item)}
               >
                 {item}
               </button>
@@ -129,10 +151,38 @@ const WorksheetGenerator = () => {
                       </div>
                     </div>
                   ))}
+                  {loading && (
+                    <div className="flex justify-start">
+                      <div className="bg-white text-foreground mr-4 shadow-sm rounded-lg p-3">
+                        <div className="flex items-center space-x-2">
+                          <Bot className="h-5 w-5 text-primary" />
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Input */}
                 <div className="space-y-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <label className="text-sm font-medium">Difficulty:</label>
+                    <Select value={difficulty} onValueChange={setDifficulty}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Easy">Easy</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Hard">Hard</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
                   <div className="flex space-x-2">
                     <textarea
                       value={inputMessage}
@@ -145,9 +195,14 @@ const WorksheetGenerator = () => {
                           handleSendMessage();
                         }
                       }}
+                      disabled={loading}
                     />
-                    <Button onClick={handleSendMessage} className="px-6">
-                      Generate
+                    <Button 
+                      onClick={handleSendMessage} 
+                      className="px-6"
+                      disabled={loading || !inputMessage.trim()}
+                    >
+                      {loading ? "Generating..." : "Generate"}
                     </Button>
                   </div>
                 </div>
