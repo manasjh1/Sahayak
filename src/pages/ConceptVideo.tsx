@@ -19,19 +19,25 @@ const ConceptVideo = () => {
             setLoading(true);
             setShowVideo(false);
 
-            // Generate random delay between 3000ms (3s) and 5000ms (5s)
-            const delay = Math.floor(Math.random() * (5000 - 3000 + 1)) + 3000;
-
             setTimeout(() => {
                 setLoading(false);
                 setShowVideo(true);
-            }, delay);
+            }, 8000);
         } else {
             alert("No video available for this topic yet!\n\nTry: Metal vs non-metal");
         }
     };
 
     return (
+         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
+            {/* Beta Disclaimer - Above everything */}
+            <Alert className="w-full max-w-md mb-6 border-orange-200 bg-orange-50">
+                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertDescription className="text-orange-800 text-sm">
+                    <strong>Beta Phase:</strong> This AI system is currently in beta. There may be occasional mistakes or inaccuracies in the generated content. The system may sometimes crash or not work due to limited resources. Please verify important information and try again if it doesn't work.
+                </AlertDescription>
+            </Alert>
+        
         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
             <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-4 text-center">🎬 Visualize a Concept</h2>
