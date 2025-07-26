@@ -12,7 +12,10 @@ const ConceptVideo = () => {
 
         const normalizedTopic = topic.toLowerCase().trim();
 
-        if (normalizedTopic === "Metal vs non-metal") {
+        // Handle multiple ways users might type this
+        if (normalizedTopic === "metal vs non-metal" || 
+            normalizedTopic === "metals vs non-metals" ||
+            normalizedTopic === "metal vs nonmetal") {
             setLoading(true);
             setShowVideo(false);
 
@@ -24,7 +27,7 @@ const ConceptVideo = () => {
                 setShowVideo(true);
             }, delay);
         } else {
-            alert("No video available for this topic yet!");
+            alert("No video available for this topic yet!\n\nTry: Metal vs non-metal");
         }
     };
 
