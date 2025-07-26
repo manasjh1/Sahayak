@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 const ConceptVideo = () => {
     const [topic, setTopic] = useState("");
@@ -29,7 +31,7 @@ const ConceptVideo = () => {
     };
 
     return (
-         <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
             {/* Beta Disclaimer - Above everything */}
             <Alert className="w-full max-w-md mb-6 border-orange-200 bg-orange-50">
                 <AlertTriangle className="h-4 w-4 text-orange-600" />
@@ -37,8 +39,7 @@ const ConceptVideo = () => {
                     <strong>Beta Phase:</strong> This AI system is currently in beta. There may be occasional mistakes or inaccuracies in the generated content. The system may sometimes crash or not work due to limited resources. Please verify important information and try again if it doesn't work.
                 </AlertDescription>
             </Alert>
-        
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 px-4">
+
             <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-4 text-center">🎬 Visualize a Concept</h2>
                 <Input
