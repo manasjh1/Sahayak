@@ -253,7 +253,7 @@ const WorksheetGenerator = () => {
     const userMessage: WorksheetMessage = {
       id: messages.length + 1,
       type: "user",
-      content: inputMessage,
+      content: `${inputMessage} (${difficulty})`,
       timestamp: new Date(),
     };
 
@@ -262,13 +262,12 @@ const WorksheetGenerator = () => {
     setLoading(true);
 
     try {
+      const formData = new FormData();
+      formData.append("msg", inputMessage);
+      formData.append("difficulty", difficulty);
       const res = await fetch("https://rag-bot-53xj.onrender.com/worksheet", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ question: inputMessage }),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -280,7 +279,7 @@ const WorksheetGenerator = () => {
       const assistantMessage: WorksheetMessage = {
         id: messages.length + 2,
         type: "assistant",
-        content: data.answer || "Sorry, I couldn't generate a worksheet.",
+        content: data.worksheet || "Sorry, I couldn't generate a worksheet.",
         timestamp: new Date(),
       };
 
@@ -376,7 +375,7 @@ const WorksheetGenerator = () => {
             <div className="w-full max-w-4xl">
               <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-7 border border-white/70 shadow-xl flex flex-col h-[550px]">
                 <h2 className="text-3xl font-semibold text-white mb-2">
-                 Worksheet Generator
+                  Worksheet Generator
                 </h2>
 
                 {/* Messages Area */}
@@ -432,7 +431,7 @@ const WorksheetGenerator = () => {
                   {/* 👇 Auto scroll anchor */}
                   <div ref={messagesEndRef} />
                 </div>
-                 {/* Difficulty Selector */}
+                {/* Difficulty Selector */}
                 <div className="mb-6">
                   <div className="flex items-center space-x-3">
                     <label className="text-sm text-white/80">Difficulty</label>
@@ -452,7 +451,7 @@ const WorksheetGenerator = () => {
                 </div>
 
 
-               
+
                 {/* Input Area */}
                 <div className="flex space-x-4">
                   <input
@@ -469,7 +468,7 @@ const WorksheetGenerator = () => {
                     }}
                     disabled={loading}
                   />
-                  
+
                   <Button
                     onClick={handleSendMessage}
                     disabled={loading || !inputMessage.trim()}
@@ -488,4 +487,3 @@ const WorksheetGenerator = () => {
 };
 
 export default WorksheetGenerator;
-  
