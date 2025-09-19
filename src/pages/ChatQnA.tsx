@@ -1305,7 +1305,7 @@ export const EnhancedChatInterface = () => {
             </div>
 
             {/* Difficulty Selector */}
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <div className="flex items-center gap-3">
                 <span className="text-sm text-slate-400">Difficulty</span>
                 <Select value={difficulty} onValueChange={setDifficulty}>
@@ -1319,7 +1319,7 @@ export const EnhancedChatInterface = () => {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </div> */}
 
             {/* Input Area */}
             <div className="flex gap-3">
