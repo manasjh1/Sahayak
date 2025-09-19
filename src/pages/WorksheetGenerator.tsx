@@ -211,279 +211,133 @@
 
 
 
-import { useState, useRef, useEffect } from "react";
+
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, User, Search, Edit, ChevronDown } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+import { MessageCircle, FileText, Image, Calendar, Eye } from "lucide-react";
 
-interface WorksheetMessage {
-  id: number;
-  type: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
+const TeacherDashboard = () => {
+  const [selectedGrade, setSelectedGrade] = useState("Grade 7");
 
-const WorksheetGenerator = () => {
-  const [inputMessage, setInputMessage] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [difficulty, setDifficulty] = useState<string>("Medium");
-  const [messages, setMessages] = useState<WorksheetMessage[]>([
+  const dashboardCards = [
     {
-      id: 1,
-      type: "assistant",
-      content: "Hello, I am here to answer, Ask me anything!",
-      timestamp: new Date(),
+      icon: MessageCircle,
+      title: "Ask a Question",
+      description: "Get instant help with any academic question",
+      buttonText: "Ask...",
+      route: "/chat-qna"
     },
-  ]);
-
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  // Auto-scroll to bottom on new messages
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    {
+      icon: FileText,
+      title: "Generate Worksheets",
+      description: "Digitize and analyse educational materials",
+      buttonText: "Generate...",
+      route: "/worksheet-generator"
+    },
+    {
+      icon: Image,
+      title: "Generate Visual Aids",
+      description: "Create drawings and diagrams for better understanding",
+      buttonText: "Generate...",
+      route: "/visual-aids"
+    },
+    {
+      icon: Calendar,
+      title: "Weekly Lesson Planner",
+      description: "Plan and organize your weekly curriculum",
+      buttonText: "Plan...",
+      route: "/lesson-planner"
+    },
+    {
+      icon: Eye,
+      title: "Concept Visualizer",
+      description: "Enter a topic to get video-based exploration",
+      buttonText: "Generate...",
+      route: "/concept-visualizer"
     }
-  }, [messages]);
-
-  const { toast } = useToast();
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || loading) return;
-
-    const userMessage: WorksheetMessage = {
-      id: messages.length + 1,
-      type: "user",
-      content: `${inputMessage} (${difficulty})`,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInputMessage("");
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("msg", inputMessage);
-      formData.append("difficulty", difficulty);
-      const res = await fetch("https://rag-bot-53xj.onrender.com/worksheet", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const data = await res.json();
-
-      const assistantMessage: WorksheetMessage = {
-        id: messages.length + 2,
-        type: "assistant",
-        content: data.worksheet || "Sorry, I couldn't generate a worksheet.",
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err) {
-      console.error("Error:", err);
-      toast({
-        title: "Error",
-        description: "Failed to get a response from the server.",
-      });
-
-      const errorMessage: WorksheetMessage = {
-        id: messages.length + 2,
-        type: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const chatTopics = [
-    "Math Problems",
-    "Light",
-    "Reading Comprehension",
-    "Grammar Exercises",
-    "Science Worksheets",
-    "Forests Our Lifeline",
-    "Electricity",
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#000000] via-[#11545B] to-[#5529A9] text-white">
-      <div className="flex h-screen">
-        {/* Sidebar */}
-        <aside className="w-80 bg-[#000000]/20 backdrop-blur-md border-r border-[#11545B]/30">
-          <div className="p-6 border-b border-[#11545B]/30"></div>
-
-          <div className="p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-white/90 mb-4">
-              Previous Topics
-            </h2>
-
-            <div className="space-y-3 mb-6">
-              <button className="flex items-center space-x-3 w-full p-3 text-left text-[#46F1E0] hover:text-white hover:bg-[#11545B]/20 rounded-lg transition-all duration-200 border border-[#11545B]/30">
-                <Edit className="h-4 w-4" />
-                <span className="text-sm">New chat</span>
-              </button>
-              <button className="flex items-center space-x-3 w-full p-3 text-left text-[#46F1E0] hover:text-white hover:bg-[#11545B]/20 rounded-lg transition-all duration-200 border border-[#11545B]/30">
-                <Search className="h-4 w-4" />
-                <span className="text-sm">Search chat</span>
-              </button>
-            </div>
-
+    <div className="min-h-screen max-h-screen overflow-hidden gradient-bg">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-border/50">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            {/* Left Side - Hello Teacher */}
             <div>
-              <h3 className="text-sm font-medium text-[#46F1E0]/70 mb-3">
-                Chats
-              </h3>
-              <div className="space-y-2">
-                {chatTopics.map((topic, index) => (
-                  <button
-                    key={index}
-                    className="w-full text-left px-4 py-3 rounded-lg bg-[#11545B]/20 hover:bg-[#11545B]/40 text-sm text-white/90 transition-all duration-200 border border-[#11545B]/40"
-                  >
-                    {topic}
-                  </button>
-                ))}
-              </div>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
+                BEST LEARNING PLATFORM
+              </p>
+              <h1 className="text-3xl font-bold text-foreground">Hello, Teacher !</h1>
+            </div>
+            
+            {/* Right Side - Grade Mode */}
+            <div className="flex items-center space-x-3">
+              <span className="text-base font-medium text-muted-foreground">Grade Mode:</span>
+              <select 
+                value={selectedGrade}
+                onChange={(e) => setSelectedGrade(e.target.value)}
+                className="bg-white/90 border border-gray-300 rounded-xl px-4 py-2 text-base font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option>Grade 7</option>
+                <option>Grade 8</option>
+                <option>Grade 9</option>
+                <option>Grade 10</option>
+                <option>Grade 11</option>
+                <option>Grade 12</option>
+              </select>
             </div>
           </div>
-        </aside>
+        </div>
+      </div>
 
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col">
-          {/* Top Header */}
-          <header className="bg-[#14273F] border-b border-white/20 p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <MessageCircle className="h-10 w-10 text-white" />
-              <div>
-                <h1 className="text-lg font-semibold text-white">Generate Your Worksheet</h1>
-                <p className="text-sm text-slate-300">Generate custom worksheets easily!</p>
-              </div>
-            </div>
-            <button className="w-10 h-10 bg-white/10 border border-white/30 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-200 backdrop-blur-sm">
-              <User className="h-5 w-5 text-white/80" />
-            </button>
-          </header>
-
-          {/* Chat Content */}
-          <div className="flex-1 flex items-center justify-center p-4">
-            <div className="w-full max-w-4xl">
-              <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-7 border border-white/70 shadow-xl flex flex-col h-[550px]">
-                <h2 className="text-3xl font-semibold text-white mb-2">
-                  Worksheet Generator
-                </h2>
-
-                {/* Messages Area */}
-                <div className="flex-1 bg rounded-2xl p-4 h-[350px] overflow-y-auto mb-4">
-                  {messages.map((message) => (
-                    <div key={message.id} className="mb-4">
-                      {message.type === "assistant" && (
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-bold text-white">
-                              🤖
-                            </span>
-                          </div>
-                          <div className="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm px-5 py-4 max-w-lg border border-white/40">
-                            <p className="text-sm text-[#000000]">
-                              {message.content}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                      {message.type === "user" && (
-                        <div className="flex justify-end mb-6">
-                          <div className="bg-[#5529A9]/80 backdrop-blur-sm rounded-2xl rounded-tr-sm px-5 py-4 max-w-lg border border-white/30">
-                            <p className="text-sm text-white">
-                              {message.content}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {loading && (
-                    <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-white">🤖</span>
-                      </div>
-                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl rounded-tl-sm px-5 py-4 border border-white/40">
-                        <div className="flex space-x-2">
-                          <div className="w-2 h-2 bg-[#11545B] rounded-full animate-bounce"></div>
-                          <div
-                            className="w-2 h-2 bg-[#11545B] rounded-full animate-bounce"
-                            style={{ animationDelay: "0.1s" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-[#11545B] rounded-full animate-bounce"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {/* 👇 Auto scroll anchor */}
-                  <div ref={messagesEndRef} />
-                </div>
-                {/* Difficulty Selector */}
-                <div className="mb-6">
-                  <div className="flex items-center space-x-3">
-                    <label className="text-sm text-white/80">Difficulty</label>
-                    <div className="relative">
-                      <select
-                        value={difficulty}
-                        onChange={(e) => setDifficulty(e.target.value)}
-                        className="w-36 bg-white/90 backdrop-blur-sm text-[#000000] rounded-xl px-5 py-1 text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/40"
-                      >
-                        <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#11545B] pointer-events-none" />
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-8 h-[calc(100vh-140px)] overflow-hidden">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 h-full">
+          {dashboardCards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <Card 
+                key={index} 
+                className="rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-white/90 backdrop-blur-sm flex flex-col"
+              >
+                <CardContent className="p-8 flex flex-col h-full">
+                  {/* Icon */}
+                  <div className="flex justify-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 shadow-lg">
+                      <Icon className="w-10 h-10 text-white" />
                     </div>
                   </div>
-                </div>
-
-
-
-                {/* Input Area */}
-                <div className="flex space-x-4">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Generate your worksheet here ..."
-                    className="flex-1 bg-white/90 backdrop-blur-sm text-[#000000] placeholder-[#11545B]/60 rounded-xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 border border-white/40"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    disabled={loading}
-                  />
-
-                  <Button
-                    onClick={handleSendMessage}
-                    disabled={loading || !inputMessage.trim()}
-                    className="bg-[#000000]/80 backdrop-blur-sm hover:bg-[#000000]/90 text-white border border-white/40 px-10 py-4 rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-white/10"
-                  >
-                    {loading ? "..." : "Generate"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
+                  
+                  {/* Content */}
+                  <div className="flex-1 flex flex-col justify-center text-center space-y-6">
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold text-foreground">{card.title}</h3>
+                      <p className="text-muted-foreground text-base leading-relaxed">
+                        {card.description}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Button */}
+                  <div className="pt-6 flex justify-center">
+                    <Button 
+                      className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-500 hover:to-blue-600 text-white font-medium px-6 py-2 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      {card.buttonText}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 };
 
-export default WorksheetGenerator;
+export default TeacherDashboard;
