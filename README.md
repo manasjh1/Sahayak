@@ -12,7 +12,7 @@
 
 ### 🚀 Beautiful, Responsive Educational Interface for 260 Million Students
 
-**[🌟 Live Demo](https://front-eight-murex.vercel.app)** | **[🔧 Backend API](https://rag-bot-53xj.onrender.com)** | **[📱 Mobile Responsive](#)**
+**[🌟 Live Demo](https://www.sahayak.me/)** | **[🔧 Backend API](https://rag-bot-53xj.onrender.com)** | **[📱 Mobile Responsive](#)**
 
 ---
 
