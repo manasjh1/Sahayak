@@ -436,6 +436,6 @@ git push origin feature/amazing-ui-feature
 
 ---
 
-**© 2024 Sahayak Frontend - MIT License**
+**© 2025 Sahayak Frontend - MIT License**
 
 </div>
